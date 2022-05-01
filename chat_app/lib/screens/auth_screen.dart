@@ -59,9 +59,11 @@ class _AuthScreenState extends State<AuthScreen> {
         content: Text(message),
         backgroundColor: Theme.of(context).errorColor,
       ));
+      setState(() {
+        _isLoading = false;
+      });
     } catch (err) {
       print({'in auth failure catch-all', err});
-    } finally {
       setState(() {
         _isLoading = false;
       });
