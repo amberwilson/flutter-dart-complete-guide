@@ -24,7 +24,12 @@ class _AuthFormState extends State<AuthForm> {
   void _trySubmit() {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState?.save();
-      widget.submitFn(_email, _password, _username, _isLogin);
+      widget.submitFn(
+        _email.trim(),
+        _password.trim(),
+        _username.trim(),
+        _isLogin,
+      );
     }
     FocusScope.of(context).unfocus();
   }
