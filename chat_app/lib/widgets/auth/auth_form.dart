@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 class AuthForm extends StatefulWidget {
   const AuthForm({Key? key}) : super(key: key);
@@ -9,6 +8,19 @@ class AuthForm extends StatefulWidget {
 }
 
 class _AuthFormState extends State<AuthForm> {
+  final _formKey = GlobalKey<FormState>();
+  var _isLogin = true;
+  var _email = '';
+  var _username = '';
+  var _password = '';
+
+  void _trySubmit() {
+    if (_formKey.currentState!.validate()) {
+      _formKey.currentState?.save();
+    }
+    FocusScope.of(context).unfocus();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Center(
@@ -18,34 +30,76 @@ class _AuthFormState extends State<AuthForm> {
           child: Padding(
             padding: const EdgeInsets.all(16),
             child: Form(
+              key: _formKey,
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   TextFormField(
+                    key: const ValueKey('email'),
+                    validator: (value) {
+                      if (value == null ||
+                          value.isEmpty ||
+                          !value.contains('@')) {
+                        return 'Please enter a valid email address.';
+                      }
+                      return null;
+                    },
                     keyboardType: TextInputType.emailAddress,
                     decoration: const InputDecoration(
                       labelText: 'Email address',
                     ),
+                    onSaved: (value) {
+                      _email = value!;
+                    },
                   ),
-                  TextFormField(
-                    decoration: const InputDecoration(
-                      labelText: 'Username',
+                  if (!_isLogin)
+                    TextFormField(
+                      key: const ValueKey('username'),
+                      validator: (value) {
+                        if (value == null ||
+                            value.isEmpty ||
+                            value.length < 4) {
+                          return 'Please enter a username.';
+                        }
+                        return null;
+                      },
+                      decoration: const InputDecoration(
+                        labelText: 'Username',
+                      ),
+                      onSaved: (value) {
+                        _username = value!;
+                      },
                     ),
-                  ),
                   TextFormField(
+                    key: const ValueKey('password'),
+                    validator: (value) {
+                      if (value == null || value.isEmpty || value.length < 7) {
+                        return 'Password must be at least 7 characters long.';
+                      }
+                      return null;
+                    },
                     obscureText: true,
                     decoration: const InputDecoration(
                       labelText: 'Password',
                     ),
+                    onSaved: (value) {
+                      _password = value!;
+                    },
                   ),
                   const SizedBox(height: 12),
                   ElevatedButton(
-                    onPressed: () {},
-                    child: const Text('Login'),
+                    onPressed: _trySubmit,
+                    child: Text(_isLogin ? 'Login' : 'Signup'),
                   ),
                   TextButton(
-                    onPressed: () {},
-                    child: const Text('Create new account'),
+                    onPressed: () {
+                      setState(() {
+                        _isLogin = !_isLogin;
+                      });
+                    },
+                    child: Text(_isLogin
+                        ? 'Create new account'
+                        : 'I already have an account'),
                   ),
                 ],
               ),
