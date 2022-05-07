@@ -10,7 +10,7 @@ class AuthForm extends StatefulWidget {
     String email,
     String password,
     String username,
-    File userImageFile,
+    File? userImageFile,
     bool isLogin,
   ) submitFn;
 
@@ -44,7 +44,7 @@ class _AuthFormState extends State<AuthForm> {
         _email.trim(),
         _password.trim(),
         _username.trim(),
-        _userImageFile!,
+        _userImageFile,
         _isLogin,
       );
     }
