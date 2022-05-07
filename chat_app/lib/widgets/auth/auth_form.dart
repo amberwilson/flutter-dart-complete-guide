@@ -1,4 +1,8 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+
+import 'user_image_picker.dart';
 
 class AuthForm extends StatefulWidget {
   bool isLoading = false;
@@ -7,6 +11,7 @@ class AuthForm extends StatefulWidget {
     String password,
     String username,
     bool isLogin,
+    File userImageFile,
   ) submitFn;
 
   AuthForm(this.submitFn, this.isLoading, {Key? key}) : super(key: key);
@@ -21,8 +26,18 @@ class _AuthFormState extends State<AuthForm> {
   var _email = '';
   var _username = '';
   var _password = '';
+  File? _userImageFile;
 
   void _trySubmit() {
+    if (!_isLogin && _userImageFile == null) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: const Text('Please pick an image.'),
+        backgroundColor: Theme.of(context).errorColor,
+      ));
+
+      return;
+    }
+
     if (_formKey.currentState!.validate()) {
       _formKey.currentState?.save();
       widget.submitFn(
@@ -30,6 +45,7 @@ class _AuthFormState extends State<AuthForm> {
         _password.trim(),
         _username.trim(),
         _isLogin,
+        _userImageFile!,
       );
     }
     FocusScope.of(context).unfocus();
@@ -48,6 +64,7 @@ class _AuthFormState extends State<AuthForm> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
+                  if (!_isLogin) UserImagePicker(_pickedImage),
                   TextFormField(
                     key: const ValueKey('email'),
                     validator: (value) {
@@ -101,7 +118,7 @@ class _AuthFormState extends State<AuthForm> {
                     },
                   ),
                   const SizedBox(height: 12),
-                  if (widget.isLoading) CircularProgressIndicator(),
+                  if (widget.isLoading) const CircularProgressIndicator(),
                   if (!widget.isLoading)
                     ElevatedButton(
                       onPressed: _trySubmit,
@@ -125,5 +142,9 @@ class _AuthFormState extends State<AuthForm> {
         ),
       ),
     );
+  }
+
+  void _pickedImage(File image) {
+    _userImageFile = image;
   }
 }
