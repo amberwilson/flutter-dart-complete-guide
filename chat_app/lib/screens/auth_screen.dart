@@ -50,11 +50,14 @@ class _AuthScreenState extends State<AuthScreen> {
           return;
         }
 
-        await FirebaseStorage.instance
+        var storageRef = FirebaseStorage.instance
             .ref()
             .child('user_images')
-            .child('${userCredential.user!.uid}.jpg')
-            .putFile(userImageFile);
+            .child('${userCredential.user!.uid}.jpg');
+
+        await storageRef.putFile(userImageFile);
+
+        final url = await storageRef.getDownloadURL();
 
         await FirebaseFirestore.instance
             .collection('users')
@@ -63,9 +66,9 @@ class _AuthScreenState extends State<AuthScreen> {
           {
             'username': username,
             'email': email,
+            'image_url': url,
           },
         );
-        print('username and email stored in firestore');
       }
     } on FirebaseAuthException catch (err) {
       var message = 'An error occurred, please check your credentials.';
@@ -81,14 +84,18 @@ class _AuthScreenState extends State<AuthScreen> {
         backgroundColor: Theme.of(context).errorColor,
       ));
 
-      setState(() {
-        _isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
     } catch (err) {
       print({'in auth failure catch-all', err});
-      setState(() {
-        _isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
     }
   }
 
