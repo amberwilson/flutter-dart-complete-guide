@@ -25,7 +25,7 @@ class ChatScreen extends StatefulWidget {
 class _ChatScreenState extends State<ChatScreen> {
   @override
   void initState() {
-    // final fbm = FirebaseMessaging.instance;
+    super.initState();
 
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       print('Got a message whilst in the foreground!');
@@ -49,7 +49,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
     FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
-    super.initState();
+    FirebaseMessaging.instance.subscribeToTopic('chat');
   }
 
   @override
@@ -59,6 +59,7 @@ class _ChatScreenState extends State<ChatScreen> {
         title: const Text('FlutterChat'),
         actions: [
           DropdownButton(
+            underline: Container(),
             icon: const Icon(Icons.more_vert),
             items: [
               DropdownMenuItem(

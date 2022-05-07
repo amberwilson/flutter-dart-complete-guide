@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 
@@ -53,6 +54,7 @@ class _AuthFormState extends State<AuthForm> {
 
   @override
   Widget build(BuildContext context) {
+    final username = 'test${Random().nextInt(10000)}';
     return Center(
       child: Card(
         margin: const EdgeInsets.all(20),
@@ -67,6 +69,9 @@ class _AuthFormState extends State<AuthForm> {
                   if (!_isLogin) UserImagePicker(_pickedImage),
                   TextFormField(
                     key: const ValueKey('email'),
+                    autocorrect: false,
+                    textCapitalization: TextCapitalization.none,
+                    enableSuggestions: false,
                     validator: (value) {
                       if (value == null ||
                           value.isEmpty ||
@@ -86,6 +91,9 @@ class _AuthFormState extends State<AuthForm> {
                   if (!_isLogin)
                     TextFormField(
                       key: const ValueKey('username'),
+                      autocorrect: true,
+                      textCapitalization: TextCapitalization.words,
+                      enableSuggestions: false,
                       validator: (value) {
                         if (value == null ||
                             value.isEmpty ||
@@ -102,6 +110,7 @@ class _AuthFormState extends State<AuthForm> {
                       },
                     ),
                   TextFormField(
+                    initialValue: 'passpass1',
                     key: const ValueKey('password'),
                     validator: (value) {
                       if (value == null || value.isEmpty || value.length < 7) {
