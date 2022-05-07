@@ -10,8 +10,8 @@ class AuthForm extends StatefulWidget {
     String email,
     String password,
     String username,
-    bool isLogin,
     File userImageFile,
+    bool isLogin,
   ) submitFn;
 
   AuthForm(this.submitFn, this.isLoading, {Key? key}) : super(key: key);
@@ -44,8 +44,8 @@ class _AuthFormState extends State<AuthForm> {
         _email.trim(),
         _password.trim(),
         _username.trim(),
-        _isLogin,
         _userImageFile!,
+        _isLogin,
       );
     }
     FocusScope.of(context).unfocus();

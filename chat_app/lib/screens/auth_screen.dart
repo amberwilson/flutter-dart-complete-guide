@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:chat_app/widgets/auth/auth_form.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 
 class AuthScreen extends StatefulWidget {
@@ -20,8 +21,8 @@ class _AuthScreenState extends State<AuthScreen> {
     String email,
     String password,
     String username,
-    bool isLogin,
     File userImageFile,
+    bool isLogin,
   ) async {
     setState(() {
       _isLoading = true;
@@ -40,13 +41,30 @@ class _AuthScreenState extends State<AuthScreen> {
           password: password,
         );
 
+        if (userCredential.user == null) {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: const Text('Could not create user.'),
+            backgroundColor: Theme.of(context).errorColor,
+          ));
+
+          return;
+        }
+
+        await FirebaseStorage.instance
+            .ref()
+            .child('user_images')
+            .child('${userCredential.user!.uid}.jpg')
+            .putFile(userImageFile);
+
         await FirebaseFirestore.instance
             .collection('users')
-            .doc(userCredential.user?.uid)
-            .set({
-          'username': username,
-          'email': email,
-        });
+            .doc(userCredential.user!.uid)
+            .set(
+          {
+            'username': username,
+            'email': email,
+          },
+        );
         print('username and email stored in firestore');
       }
     } on FirebaseAuthException catch (err) {
@@ -62,6 +80,7 @@ class _AuthScreenState extends State<AuthScreen> {
         content: Text(message),
         backgroundColor: Theme.of(context).errorColor,
       ));
+
       setState(() {
         _isLoading = false;
       });
